@@ -1,0 +1,133 @@
+// Conecta o esp32 ao Wi-Fi...
+#include <WiFi.h>
+// Cliente de rede para as conexões do servidor...
+#include <WiFiClient.h>
+// Cria o servidor no esp32...
+#include <WebServer.h>
+
+// Cria as variáveis pra armazenar o nome e senha da rede Wi-Fi...
+String nome_rede_wifi = "";
+String senha_rede_wifi = "";
+
+// Cria a constante e o inteiro pra difinir e usar a porta do servidor...
+const int PORTA = 80;
+
+// A verificação de tentativas inicia em "0" e termina em "150"...
+int quantidade_verificao = 0;
+int limite_verificao = 150;
+bool sucesso_verificacao = false;
+
+// Define o servidor com a classe "WebServer" e um objeto "server" usando a constante inteira "PORTA" ...
+WebServer server(PORTA);
+
+// Cria a função com a página HTML...
+void paginaHtml()
+{
+  // Tudo que fica dentro do "R" é texto puro...
+  String resposta = R"(
+    <!DOCTYPE html><html>
+      <head>
+        <title>ESP32 HTTP</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+      </head>      
+      <body>
+        <h1>Servidor Web Server ESP32 Online</h1>
+      </body>
+    </html>
+  )";
+  // Envia o status de reposta junto com o conteúdo da página...
+  server.send(200, "text/html", resposta);
+}
+
+void setup()
+{
+  Serial.begin(115200);
+  // Ativa a reconexão automática na rede Wi-Fi se estiver "true"...
+  WiFi.setAutoReconnect(false);
+ 
+  // Envolve o precesso de receber, validar e conectar...
+  while (sucesso_verificacao == false)
+  {
+    // Reinicia o contador para permitir uma nova tentativa após uma falha...
+    quantidade_verificao = 0;
+    // Recebe o nome da rede via serial...
+    Serial.println("Digite o nome da rede Wi-Fi");
+    // Espera o usuário digitar na serial...
+    while (Serial.available() == 0)
+    {
+      delay(100);
+    }
+    // Lê até apertar Enter...
+    nome_rede_wifi = Serial.readStringUntil('\n');
+    // Limpa os espaços do início, fim e quebra de linhas...
+    nome_rede_wifi.trim();
+    // Pula uma linha...
+    Serial.println();
+    // Recebe a senha da rede via serial...
+    Serial.println("Digite a senha da rede Wi-fi");
+    // Pula linha...
+    Serial.println();
+    // Cria uma pausa no código que barra o avanço até que o monitor receba caracteres do teclado...
+    while (Serial.available() == 0)
+    {
+      delay(100);
+    }
+    // Lê até apertar Enter...
+    senha_rede_wifi = Serial.readStringUntil('\n');
+    // Limpa os espaços do início, fim e quebra de linhas...
+    senha_rede_wifi.trim();
+
+    // Conecta a placa a uma rede existente...
+    WiFi.begin(nome_rede_wifi.c_str(), senha_rede_wifi.c_str());
+    // Feeback de verificação de dados inseridos...
+    Serial.println("Verificando dados inseridos, aguarde!");
+    // Aguardando conexão: "!= Difrente de..." enquanto o status do Wi-Fi for diferente de "conectado", ele continua...
+    // Contiuna a verificação enquanto a quantidade de tentativas for menor que o limite, "50"...
+    while (WiFi.status() != WL_CONNECTED && (quantidade_verificao < limite_verificao))
+    {
+      delay(100);
+      // Pontinhos...
+      Serial.print(".");
+      // Soma uma tentativa até chegar en "50"...
+      quantidade_verificao = quantidade_verificao + 1;
+    }
+    // Pula linha...
+    Serial.println();
+    // Verifica se o status é conecatdo...
+    if (WiFi.status() == WL_CONNECTED)
+    {
+      // Conexão confirmada "dados válidos", encerra o laço...
+      sucesso_verificacao = true;
+      Serial.println();
+      // Status dos processos no monitor...
+      Serial.print(
+          "Conectado: " + String(nome_rede_wifi) + '\n' +
+          "Endereço IP: " + WiFi.localIP().toString() + '\n' +
+          "Porta: " + String(PORTA) + '\n' +
+          "Servidor HTTP ESP32 online..." + "\n\n\n" +
+          " ===...Desenvolvido por: Bruno Maker - 2026 - All rigths reserved...=== ");
+    }
+    else
+    {
+      // Desconecta e desliga o Wi-Fi se der erro de credenciais se tiver "true"...
+      WiFi.disconnect(false);
+      // Pula linha...
+      Serial.println();
+      // Resposta de erro...
+      Serial.println("Nome da rede ou senha inválido!");
+      // Pula linha...
+      Serial.println();
+    }
+  }
+  // Raíz da página...
+  server.on("/", paginaHtml);
+  // Ininia o servidor HTTP...
+  server.begin();
+};
+
+void loop()
+{
+  // Verifica se o navegador fez alguma requisição...
+  server.handleClient();
+  delay(2);
+};
