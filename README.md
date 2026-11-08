@@ -1,5 +1,7 @@
 # WI-FI-ESP32
 
+[![English version](https://img.shields.io/badge/English%20version-README.en.md-00979D?style=for-the-badge)](README.en.md)
+
 Sketch para Arduino IDE que conecta o ESP32 a uma rede Wi-Fi e sobe um servidor HTTP simples. O nome e a senha da rede são digitados pelo Monitor Serial, então não ficam gravados no código.
 
 [![Ver o código](https://img.shields.io/badge/Ver%20o%20c%C3%B3digo-WI--FI--ESP32.ino-00979D?style=for-the-badge&logo=arduino&logoColor=white)](WI-FI-ESP32.ino)
