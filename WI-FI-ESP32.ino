@@ -105,7 +105,7 @@ void setup()
           "Endereço IP: " + WiFi.localIP().toString() + '\n' +
           "Porta: " + String(PORTA) + '\n' +
           "Servidor HTTP ESP32 online..." + "\n\n\n" +
-          " ===...Desenvolvido por: Bruno Maker - 2026 - All rigths reserved...=== ");
+          " ===...Desenvolvido por: Bruno Maker - 2026 ..=== ");
     }
     else
     {
