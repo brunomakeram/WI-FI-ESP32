@@ -91,6 +91,7 @@ Servidor HTTP ESP32 online...
     └── print.jpg
 ```
 
-## Autor
+🚀 Próximos projetos
+Outros projetos serão postados em breve, com topologias diferentes e níveis de complexidade maiores.
 
-Bruno Maker, 2026. Todos os direitos reservados.
+👤 Autor: Bruno Zucker
